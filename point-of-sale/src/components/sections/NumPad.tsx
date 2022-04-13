@@ -39,8 +39,8 @@ export const NumPad: FC = () => {
     );
     const onBackspace = useCallback(() => setValue((value) => (value.length ? value.slice(0, -1) || '0' : value)), []);
 
-    const { setAmount } = usePayment();
-    useEffect(() => setAmount(value ? new BigNumber(value) : undefined), [setAmount, value]);
+    const { setAmountRupiah } = usePayment();
+    useEffect(() => setAmountRupiah(value ? new BigNumber(value) : undefined), [setAmountRupiah, value]);
 
     return (
         <div className={css.root}>

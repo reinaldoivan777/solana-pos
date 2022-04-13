@@ -11,6 +11,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { ConfirmedSignatureInfo, Keypair, PublicKey, TransactionSignature } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import axios from 'axios';
 import { useConfig } from '../../hooks/useConfig';
 import { useNavigateWithQuery } from '../../hooks/useNavigateWithQuery';
 import { PaymentContext, PaymentStatus } from '../../hooks/usePayment';
@@ -26,6 +27,7 @@ export const PaymentProvider: FC<PaymentProviderProps> = ({ children }) => {
     const { publicKey, sendTransaction } = useWallet();
 
     const [amount, setAmount] = useState<BigNumber>();
+    const [amountRupiah, setAmountRupiah] = useState<BigNumber>();
     const [message, setMessage] = useState<string>();
     const [memo, setMemo] = useState<string>();
     const [reference, setReference] = useState<PublicKey>();
@@ -51,6 +53,7 @@ export const PaymentProvider: FC<PaymentProviderProps> = ({ children }) => {
 
     const reset = useCallback(() => {
         setAmount(undefined);
+        setAmountRupiah(undefined);
         setMessage(undefined);
         setMemo(undefined);
         setReference(undefined);
@@ -59,6 +62,18 @@ export const PaymentProvider: FC<PaymentProviderProps> = ({ children }) => {
         setConfirmations(0);
         navigate('/new', { replace: true });
     }, [navigate]);
+
+    const convertRupiahToSol = async () => {
+        const response = await axios
+            .post(
+                `https://dev-e-wallet-api.qoincrypto.id/convert/idr?exchange=solidr&amount=${amountRupiah?.toNumber()}`
+            )
+            .then((res) => res.data)
+            .catch((err) => {
+                console.log(err);
+            });
+        return response;
+    };
 
     const generate = useCallback(() => {
         if (status === PaymentStatus.New && !reference) {
@@ -215,6 +230,8 @@ export const PaymentProvider: FC<PaymentProviderProps> = ({ children }) => {
             value={{
                 amount,
                 setAmount,
+                amountRupiah,
+                setAmountRupiah,
                 message,
                 setMessage,
                 memo,
@@ -227,6 +244,7 @@ export const PaymentProvider: FC<PaymentProviderProps> = ({ children }) => {
                 url,
                 reset,
                 generate,
+                convertRupiahToSol,
             }}
         >
             {children}

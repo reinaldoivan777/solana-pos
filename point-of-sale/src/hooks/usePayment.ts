@@ -15,6 +15,8 @@ export enum PaymentStatus {
 export interface PaymentContextState {
     amount: BigNumber | undefined;
     setAmount(amount: BigNumber | undefined): void;
+    amountRupiah: BigNumber | undefined | null;
+    setAmountRupiah(amountRupiah: BigNumber | undefined): void;
     message: string | undefined;
     setMessage(message: string | undefined): void;
     memo: string | undefined;
@@ -27,6 +29,7 @@ export interface PaymentContextState {
     url: string;
     reset(): void;
     generate(): void;
+    convertRupiahToSol(): void;
 }
 
 export const PaymentContext = createContext<PaymentContextState>({} as PaymentContextState);
